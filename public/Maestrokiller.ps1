@@ -1,4 +1,4 @@
-﻿# -----------------------------------------
+# -----------------------------------------
 # PowerShell Script with Menu (Updated)
 # -----------------------------------------
 
@@ -232,7 +232,7 @@ function Install-ThoriumBrowser {
     Write-Host "`n=== Thorium 브라우저 설치 (AVX2 버전) ==="
     
     # Thorium 브라우저 다운로드 URL (최신 AVX2 버전)
-    $thoriumUrl = "https://github.com/Alex313031/thorium/releases/latest/download/thorium_AVX2_mini_installer.exe"
+    $thoriumUrl = "https://github.com/Alex313031/thorium/releases/download/M120.0.6099.235/thorium_AVX2_mini_installer.exe"
     $installerPath = Join-Path $env:TEMP "thorium_installer.exe"
     
     try {
@@ -251,6 +251,22 @@ function Install-ThoriumBrowser {
     }
     catch {
         Write-Warning "Thorium 브라우저 설치 중 오류 발생: $($_.Exception.Message)"
+        
+        # 대체 URL로 재시도
+        try {
+            $fallbackUrl = "https://github.com/Alex313031/thorium/releases/download/M120.0.6099.235/thorium_mini_installer.exe"
+            Write-Host "  -> 대체 URL로 재시도 중..."
+            Invoke-WebRequest -Uri $fallbackUrl -OutFile $installerPath
+            
+            # 설치 실행
+            Write-Host "  -> Thorium 브라우저 설치 중..."
+            Start-Process -FilePath $installerPath -ArgumentList "/silent" -Wait
+            
+            Write-Host "  -> Thorium 브라우저 설치 완료 (대체 버전)"
+        }
+        catch {
+            Write-Warning "대체 URL로도 설치 실패: $($_.Exception.Message)"
+        }
     }
 }
 
